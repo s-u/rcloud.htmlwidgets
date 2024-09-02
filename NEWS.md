@@ -1,3 +1,6 @@
+## 1.1.2
+* respect widget's sizing policy when generating an iframe
+
 ## 1.1.1
 * merges user library support from 1.0.8
 
