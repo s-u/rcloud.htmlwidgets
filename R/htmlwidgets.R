@@ -191,7 +191,7 @@ as.character.htmlwidget <- function(x, ocaps = TRUE, ...) {
   deps <- lapply(deps, rcloudHTMLDependency)
   rendered <- htmltools::renderTags(html)
   
-  build.html(list(body = rendered$html, head = rendered$head, dependencies = deps), ocaps)
+  build.html(list(body = rendered$html, head = rendered$head, dependencies = deps), ocaps, x)
 }
 
 ## htmltoos does have as.character() mehtods
@@ -214,11 +214,11 @@ as.character.shiny.tag <- function(x, ocaps = TRUE, rcloud_htmlwidgets_print = F
     rendered <- htmltools::renderTags(x)
     deps <- lapply(rendered$dependencies, rcloudHTMLDependency)
   
-    build.html(list(body = rendered$html, head = rendered$head, dependencies = deps), ocaps)
+    build.html(list(body = rendered$html, head = rendered$head, dependencies = deps), ocaps, x)
   }
 }
 
-build.html <- function(content = list(body = NULL, head = NULL, dependencies = list()), ocaps = TRUE) {
+build.html <- function(content = list(body = NULL, head = NULL, dependencies = list()), ocaps = TRUE, widget) {
   background <- "white"
   html <- c(
     "<!DOCTYPE html>", "<html>", "<head>", "<meta charset=\"utf-8\"/>",
@@ -235,12 +235,14 @@ build.html <- function(content = list(body = NULL, head = NULL, dependencies = l
   
   where <- paste0("rc_htmlwidget_content_", as.integer(runif(1)*1e6))
   
+  sz <- htmlwidgets:::resolveSizing(widget, widget$sizingPolicy, TRUE)
+
   paste(
     sep = "",
     "<div class=\"rcloud-htmlwidget-content\" id=\"",
     where,
     "\">",
-    "<iframe frameBorder=\"0\" width=\"100%\" height=\"400\" srcdoc=\"",
+    "<iframe frameBorder=\"0\" width=\"", sz$width, "\" height=\"", sz$height, "\" srcdoc=\"",
     gsub("\"", "&quot;", paste(html, collapse = "\n")),
     "\"></iframe>",
     "</div>"
